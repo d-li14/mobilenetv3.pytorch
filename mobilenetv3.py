@@ -145,7 +145,10 @@ class MobileNetV3(nn.Module):
             input_channel = output_channel
         self.features = nn.Sequential(*layers)
         # building last several layers
-        self.conv = conv_1x1_bn(input_channel, _make_divisible(exp_size * width_mult, 8))
+        self.conv = nn.Sequential(
+            conv_1x1_bn(input_channel, _make_divisible(exp_size * width_mult, 8)),
+            SELayer(_make_divisible(exp_size * width_mult, 8)) if mode == 'small' else nn.Sequential()
+        )
         self.avgpool = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             h_swish()
@@ -156,6 +159,7 @@ class MobileNetV3(nn.Module):
             nn.BatchNorm1d(output_channel) if mode == 'small' else nn.Sequential(),
             h_swish(),
             nn.Linear(output_channel, num_classes),
+            nn.BatchNorm1d(num_classes) if mode == 'small' else nn.Sequential(),
             h_swish() if mode == 'small' else nn.Sequential()
         )
 
