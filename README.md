@@ -7,6 +7,13 @@ Download the ImageNet dataset and move validation images to labeled subfolders.
 To do this, you can use the following script: https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
 
 # Models
+| Architecture      | # Parameters | MFLOPs | Top-1 / Top-5 Accuracy (%) |
+| ----------------- | ------------ | ------ | -------------------------- |
+| MobileNetV3-Large | 5.145M       | 245.58 |                            |
+| MobileNetV3-Small | 3.112M       | 57.08  |                            |
+
+*Note: The implemented architecture follows Table 1 and 2 in the paper, yet architectural details are vaguely described, rendering mismatches of both parameters and complexity.*
+
 ```python
 from mobilenetv3 import mobilenetv3_large, mobilenetv3_small
 
