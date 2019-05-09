@@ -33,18 +33,18 @@ def _make_divisible(v, divisor, min_value=None):
 
 
 class h_sigmoid(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=True):
         super(h_sigmoid, self).__init__()
-        self.relu = nn.ReLU6(inplace=True)
+        self.relu = nn.ReLU6(inplace=inplace)
 
     def forward(self, x):
         return self.relu(x + 3) / 6
 
 
 class h_swish(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=True):
         super(h_swish, self).__init__()
-        self.sigmoid = h_sigmoid()
+        self.sigmoid = h_sigmoid(inplace=inplace)
 
     def forward(self, x):
         return x * self.sigmoid(x)
@@ -112,9 +112,9 @@ class InvertedResidual(nn.Module):
                 # dw
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2, groups=hidden_dim, bias=False),
                 nn.BatchNorm2d(hidden_dim),
-                h_swish() if use_hs else nn.ReLU(inplace=True),
                 # Squeeze-and-Excite
                 SELayer(hidden_dim) if use_se else nn.Sequential(),
+                h_swish() if use_hs else nn.ReLU(inplace=True),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
                 nn.BatchNorm2d(oup),
@@ -128,10 +128,11 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, cfgs, num_classes=1000, width_mult=1.):
+    def __init__(self, cfgs, mode, num_classes=1000, width_mult=1.):
         super(MobileNetV3, self).__init__()
         # setting of inverted residual blocks
         self.cfgs = cfgs
+        assert mode in ['large', 'small']
 
         # building first layer
         input_channel = _make_divisible(16 * width_mult, 8)
@@ -152,8 +153,10 @@ class MobileNetV3(nn.Module):
         output_channel = _make_divisible(1280 * width_mult, 8) if width_mult > 1.0 else 1280
         self.classifier = nn.Sequential(
             nn.Linear(_make_divisible(exp_size * width_mult, 8), output_channel),
+            nn.BatchNorm1d(output_channel) if mode == 'small' else nn.Sequential(),
             h_swish(),
-            nn.Linear(output_channel, num_classes)
+            nn.Linear(output_channel, num_classes),
+            h_swish() if mode == 'small' else nn.Sequential()
         )
 
         self._initialize_weights()
@@ -201,10 +204,10 @@ def mobilenetv3_large(**kwargs):
         [3, 480, 112, 1, 1, 1],
         [3, 672, 112, 1, 1, 1],
         [5, 672, 160, 1, 1, 1],
-        [5, 672, 160, 1, 1, 2],
+        [5, 672, 160, 1, 1, 2], #NOTE Input is set to 7^2 x 112
         [5, 960, 160, 1, 1, 1]
     ]
-    return MobileNetV3(cfgs, **kwargs)
+    return MobileNetV3(cfgs, mode='large', **kwargs)
 
 
 def mobilenetv3_small(**kwargs):
@@ -216,7 +219,7 @@ def mobilenetv3_small(**kwargs):
         [3,  16,  16, 1, 0, 2],
         [3,  72,  24, 0, 0, 2],
         [3,  88,  24, 0, 0, 1],
-        [5,  96,  40, 1, 1, 1],
+        [5,  96,  40, 1, 1, 2],
         [5, 240,  40, 1, 1, 1],
         [5, 240,  40, 1, 1, 1],
         [5, 120,  48, 1, 1, 1],
@@ -226,5 +229,5 @@ def mobilenetv3_small(**kwargs):
         [5, 576,  96, 1, 1, 1],
     ]
 
-    return MobileNetV3(cfgs, **kwargs)
+    return MobileNetV3(cfgs, mode='small', **kwargs)
 
