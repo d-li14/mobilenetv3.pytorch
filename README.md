@@ -10,7 +10,9 @@ To do this, you can use the following script: https://raw.githubusercontent.com/
 | Architecture      | # Parameters | MFLOPs | Top-1 / Top-5 Accuracy (%) |
 | ----------------- | ------------ | ------ | -------------------------- |
 | MobileNetV3-Large | 5.145M       | 245.58 |                            |
-| MobileNetV3-Small | 3.112M       | 57.08  |                            |
+| [MobileNetV2 1.0](https://github.com/d-li14/mobilenetv2.pytorch/blob/master/pretrained/mobilenetv2-0c6065bc.pth)  | 3.504M       | 300.79 | 72.192 / 90.534            |
+| MobileNetV3-Small | 3.112M       |  57.08 |                            |
+| [MobileNetV2 0.35](https://github.com/d-li14/mobilenetv2.pytorch/blob/master/pretrained/mobilenetv2_0.35-b2e15951.pth)  | 1.677M       |  59.29 | 60.092 / 82.172        |
 
 *Note: The implemented architecture follows Table 1 and 2 in the paper, yet architectural details are vaguely described, rendering mismatches of both parameters and complexity.*
 
