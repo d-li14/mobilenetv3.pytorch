@@ -9,7 +9,7 @@ To do this, you can use the following script: https://raw.githubusercontent.com/
 # Models
 | Architecture      | # Parameters | MFLOPs | Top-1 / Top-5 Accuracy (%) |
 | ----------------- | ------------ | ------ | -------------------------- |
-| MobileNetV3-Large | 5.145M       | 245.58 |                            |
+| [MobileNetV3-Large](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-large-657e7b3d.pth) | 5.145M | 245.58 | 73.152 / 91.102 |
 | [MobileNetV2 1.0](https://github.com/d-li14/mobilenetv2.pytorch/blob/master/pretrained/mobilenetv2-0c6065bc.pth)         | 3.504M | 300.79 | 72.192 / 90.534 |
 | [MobileNetV3-Small](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-small-c7eb32fe.pth) | 3.112M |  57.08 | 67.102 / 86.374 |
 | [MobileNetV2 0.35](https://github.com/d-li14/mobilenetv2.pytorch/blob/master/pretrained/mobilenetv2_0.35-b2e15951.pth)   | 1.677M |  59.29 | 60.092 / 82.172 |
