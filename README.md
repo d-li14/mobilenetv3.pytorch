@@ -22,9 +22,8 @@ from mobilenetv3 import mobilenetv3_large, mobilenetv3_small
 net_large = mobilenetv3_large()
 net_small = mobilenetv3_small()
 
-# pretrained models will come soon
-net_large.load_state_dict(torch.load('pretrained/mobilenetv3-large.pth'))
-net_small.load_state_dict(torch.load('pretrained/mobilenetv3-small.pth'))
+net_large.load_state_dict(torch.load('pretrained/mobilenetv3-large-657e7b3d.pth'))
+net_small.load_state_dict(torch.load('pretrained/mobilenetv3-small-c7eb32fe.pth'))
 ```
 
 # Citation
