@@ -208,7 +208,7 @@ def mobilenetv3_large(**kwargs):
         [3, 480, 112, 1, 1, 1],
         [3, 672, 112, 1, 1, 1],
         [5, 672, 160, 1, 1, 1],
-        [5, 672, 160, 1, 1, 2], #NOTE Input is set to 7^2 x 112
+        [5, 672, 160, 1, 1, 2],
         [5, 960, 160, 1, 1, 1]
     ]
     return MobileNetV3(cfgs, mode='large', **kwargs)
@@ -220,10 +220,10 @@ def mobilenetv3_small(**kwargs):
     """
     cfgs = [
         # k, t, c, SE, NL, s 
-        [3,  16,  16, 1, 0, 2], #NOTE Input is set to 112^2 x 24
-        [3,  72,  24, 0, 0, 2], #NOTE Input is set to 112^2 x 24
+        [3,  16,  16, 1, 0, 2],
+        [3,  72,  24, 0, 0, 2],
         [3,  88,  24, 0, 0, 1],
-        [5,  96,  40, 1, 1, 2], #NOTE stride is set to 1
+        [5,  96,  40, 1, 1, 2],
         [5, 240,  40, 1, 1, 1],
         [5, 240,  40, 1, 1, 1],
         [5, 120,  48, 1, 1, 1],
