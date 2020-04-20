@@ -98,7 +98,7 @@ class InvertedResidual(nn.Module):
                 nn.BatchNorm2d(hidden_dim),
                 h_swish() if use_hs else nn.ReLU(inplace=True),
                 # Squeeze-and-Excite
-                SELayer(hidden_dim) if use_se else nn.Sequential(),
+                SELayer(hidden_dim) if use_se else nn.Identity(),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
                 nn.BatchNorm2d(oup),
@@ -113,7 +113,7 @@ class InvertedResidual(nn.Module):
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride, (kernel_size - 1) // 2, groups=hidden_dim, bias=False),
                 nn.BatchNorm2d(hidden_dim),
                 # Squeeze-and-Excite
-                SELayer(hidden_dim) if use_se else nn.Sequential(),
+                SELayer(hidden_dim) if use_se else nn.Identity(),
                 h_swish() if use_hs else nn.ReLU(inplace=True),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
@@ -141,26 +141,20 @@ class MobileNetV3(nn.Module):
         block = InvertedResidual
         for k, exp_size, c, use_se, use_hs, s in self.cfgs:
             output_channel = _make_divisible(c * width_mult, 8)
+            exp_size = _make_divisible(exp_size * width_mult, 8)
             layers.append(block(input_channel, exp_size, output_channel, k, s, use_se, use_hs))
             input_channel = output_channel
         self.features = nn.Sequential(*layers)
         # building last several layers
-        self.conv = nn.Sequential(
-            conv_1x1_bn(input_channel, _make_divisible(exp_size * width_mult, 8)),
-            SELayer(_make_divisible(exp_size * width_mult, 8)) if mode == 'small' else nn.Sequential()
-        )
-        self.avgpool = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
-            h_swish()
-        )
-        output_channel = _make_divisible(1280 * width_mult, 8) if width_mult > 1.0 else 1280
+        self.conv = conv_1x1_bn(input_channel, exp_size)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        output_channel = {'large': 1280, 'small': 1024}
+        output_channel = _make_divisible(output_channel[mode] * width_mult, 8) if width_mult > 1.0 else output_channel[mode]
         self.classifier = nn.Sequential(
-            nn.Linear(_make_divisible(exp_size * width_mult, 8), output_channel),
-            nn.BatchNorm1d(output_channel) if mode == 'small' else nn.Sequential(),
+            nn.Linear(exp_size, output_channel),
             h_swish(),
+            nn.Dropout(0.2),
             nn.Linear(output_channel, num_classes),
-            nn.BatchNorm1d(num_classes) if mode == 'small' else nn.Sequential(),
-            h_swish() if mode == 'small' else nn.Sequential()
         )
 
         self._initialize_weights()
@@ -194,7 +188,7 @@ def mobilenetv3_large(**kwargs):
     Constructs a MobileNetV3-Large model
     """
     cfgs = [
-        # k, t, c, SE, NL, s 
+        # k, t, c, SE, HS, s 
         [3,  16,  16, 0, 0, 1],
         [3,  64,  24, 0, 0, 2],
         [3,  72,  24, 0, 0, 1],
@@ -207,8 +201,8 @@ def mobilenetv3_large(**kwargs):
         [3, 184,  80, 0, 1, 1],
         [3, 480, 112, 1, 1, 1],
         [3, 672, 112, 1, 1, 1],
-        [5, 672, 160, 1, 1, 1],
         [5, 672, 160, 1, 1, 2],
+        [5, 960, 160, 1, 1, 1],
         [5, 960, 160, 1, 1, 1]
     ]
     return MobileNetV3(cfgs, mode='large', **kwargs)
@@ -219,7 +213,7 @@ def mobilenetv3_small(**kwargs):
     Constructs a MobileNetV3-Small model
     """
     cfgs = [
-        # k, t, c, SE, NL, s 
+        # k, t, c, SE, HS, s 
         [3,  16,  16, 1, 0, 2],
         [3,  72,  24, 0, 0, 2],
         [3,  88,  24, 0, 0, 1],
