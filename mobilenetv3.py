@@ -55,9 +55,9 @@ class SELayer(nn.Module):
         super(SELayer, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
-                nn.Linear(channel, channel // reduction),
+                nn.Linear(channel, _make_divisible(channel // reduction, 8)),
                 nn.ReLU(inplace=True),
-                nn.Linear(channel // reduction, channel),
+                nn.Linear(_make_divisible(channel // reduction, 8), channel),
                 h_sigmoid()
         )
 
@@ -139,9 +139,9 @@ class MobileNetV3(nn.Module):
         layers = [conv_3x3_bn(3, input_channel, 2)]
         # building inverted residual blocks
         block = InvertedResidual
-        for k, exp_size, c, use_se, use_hs, s in self.cfgs:
+        for k, t, c, use_se, use_hs, s in self.cfgs:
             output_channel = _make_divisible(c * width_mult, 8)
-            exp_size = _make_divisible(exp_size * width_mult, 8)
+            exp_size = _make_divisible(input_channel * t, 8)
             layers.append(block(input_channel, exp_size, output_channel, k, s, use_se, use_hs))
             input_channel = output_channel
         self.features = nn.Sequential(*layers)
@@ -153,7 +153,7 @@ class MobileNetV3(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(exp_size, output_channel),
             h_swish(),
-            nn.Dropout(0.2),
+            #nn.Dropout(0.2),
             nn.Linear(output_channel, num_classes),
         )
 
@@ -189,21 +189,21 @@ def mobilenetv3_large(**kwargs):
     """
     cfgs = [
         # k, t, c, SE, HS, s 
-        [3,  16,  16, 0, 0, 1],
-        [3,  64,  24, 0, 0, 2],
-        [3,  72,  24, 0, 0, 1],
-        [5,  72,  40, 1, 0, 2],
-        [5, 120,  40, 1, 0, 1],
-        [5, 120,  40, 1, 0, 1],
-        [3, 240,  80, 0, 1, 2],
-        [3, 200,  80, 0, 1, 1],
-        [3, 184,  80, 0, 1, 1],
-        [3, 184,  80, 0, 1, 1],
-        [3, 480, 112, 1, 1, 1],
-        [3, 672, 112, 1, 1, 1],
-        [5, 672, 160, 1, 1, 2],
-        [5, 960, 160, 1, 1, 1],
-        [5, 960, 160, 1, 1, 1]
+        [3,   1,  16, 0, 0, 1],
+        [3,   4,  24, 0, 0, 2],
+        [3,   3,  24, 0, 0, 1],
+        [5,   3,  40, 1, 0, 2],
+        [5,   3,  40, 1, 0, 1],
+        [5,   3,  40, 1, 0, 1],
+        [3,   6,  80, 0, 1, 2],
+        [3, 2.5,  80, 0, 1, 1],
+        [3, 2.3,  80, 0, 1, 1],
+        [3, 2.3,  80, 0, 1, 1],
+        [3,   6, 112, 1, 1, 1],
+        [3,   6, 112, 1, 1, 1],
+        [5,   6, 160, 1, 1, 2],
+        [5,   6, 160, 1, 1, 1],
+        [5,   6, 160, 1, 1, 1]
     ]
     return MobileNetV3(cfgs, mode='large', **kwargs)
 
@@ -214,17 +214,17 @@ def mobilenetv3_small(**kwargs):
     """
     cfgs = [
         # k, t, c, SE, HS, s 
-        [3,  16,  16, 1, 0, 2],
-        [3,  72,  24, 0, 0, 2],
-        [3,  88,  24, 0, 0, 1],
-        [5,  96,  40, 1, 1, 2],
-        [5, 240,  40, 1, 1, 1],
-        [5, 240,  40, 1, 1, 1],
-        [5, 120,  48, 1, 1, 1],
-        [5, 144,  48, 1, 1, 1],
-        [5, 288,  96, 1, 1, 2],
-        [5, 576,  96, 1, 1, 1],
-        [5, 576,  96, 1, 1, 1],
+        [3,    1,  16, 1, 0, 2],
+        [3,  4.5,  24, 0, 0, 2],
+        [3, 3.67,  24, 0, 0, 1],
+        [5,    4,  40, 1, 1, 2],
+        [5,    6,  40, 1, 1, 1],
+        [5,    6,  40, 1, 1, 1],
+        [5,    3,  48, 1, 1, 1],
+        [5,    3,  48, 1, 1, 1],
+        [5,    6,  96, 1, 1, 2],
+        [5,    6,  96, 1, 1, 1],
+        [5,    6,  96, 1, 1, 1],
     ]
 
     return MobileNetV3(cfgs, mode='small', **kwargs)
