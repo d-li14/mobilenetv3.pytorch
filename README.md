@@ -9,10 +9,10 @@ To do this, you can use the following script: https://raw.githubusercontent.com/
 # Models
 | Architecture      | # Parameters | MFLOPs | Top-1 / Top-5 Accuracy (%) |
 | ----------------- | ------------ | ------ | -------------------------- |
-| [MobileNetV3-Large 1.0](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-large-b4e262ea.pth) | 5.481M | 216.60 | 74.256 / 91.918 |
-| [MobileNetV3-Large 0.75]() | 3.913M | 140.58 |  |
-| [MobileNetV3-Small 1.0](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-small-547c1152.pth) | 2.537M |  56.51 | 67.220 / 87.260 |
-| [MobileNetV3-Small 0.75]() | 2.009M |  39.48 |  |
+| [MobileNetV3-Large 1.0](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-large-1cd25616.pth) | 5.483M | 216.60 | 74.280 / 91.928 |
+| [MobileNetV3-Large 0.75](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-large-0.75-9632d2a8.pth) | 3.994M | 154.57 | 72.842 / 90.846 |
+| [MobileNetV3-Small 1.0](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-small-55df8e1f.pth) | 2.543M |  56.52 | 67.214 / 87.304 |
+| [MobileNetV3-Small 0.75](https://github.com/d-li14/mobilenetv3.pytorch/blob/master/pretrained/mobilenetv3-small-0.75-86c972c3.pth) | 2.042M |  43.40 | 64.876 / 85.498 |
 
 
 ```python
@@ -21,8 +21,8 @@ from mobilenetv3 import mobilenetv3_large, mobilenetv3_small
 net_large = mobilenetv3_large()
 net_small = mobilenetv3_small()
 
-net_large.load_state_dict(torch.load('pretrained/mobilenetv3-large-b4e262ea.pth'))
-net_small.load_state_dict(torch.load('pretrained/mobilenetv3-small-547c1152.pth'))
+net_large.load_state_dict(torch.load('pretrained/mobilenetv3-large-1cd25616.pth'))
+net_small.load_state_dict(torch.load('pretrained/mobilenetv3-small-55df8e1f.pth'))
 ```
 
 # Citation
