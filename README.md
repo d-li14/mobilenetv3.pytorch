@@ -6,6 +6,16 @@ Reproduction of MobileNet V3 architecture as described in [Searching for MobileN
 Download the ImageNet dataset and move validation images to labeled subfolders.
 To do this, you can use the following script: https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
 
+# Training recipe
+* *batch size* 1024
+* *epoch* 150
+* *learning rate* 0.4 (ramps up from 0.1 to 0.4 in the first 5 epochs)
+* *LR decay strategy* cosine
+* *weight decay* 0.00004
+* *dropout rate* 0.2 (0.1 for Small-version 0.75)
+* *no weight decay* biases and BN
+* *label smoothing* 0.1 (only for Large-version)
+
 # Models
 | Architecture      | # Parameters | MFLOPs | Top-1 / Top-5 Accuracy (%) |
 | ----------------- | ------------ | ------ | -------------------------- |
