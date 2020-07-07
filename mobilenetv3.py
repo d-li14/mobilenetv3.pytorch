@@ -144,6 +144,7 @@ class MobileNetV3(nn.Module):
             exp_size = _make_divisible(input_channel * t, 8)
             layers.append(block(input_channel, exp_size, output_channel, k, s, use_se, use_hs))
             input_channel = output_channel
+        self.exp_size = exp_size
         self.features = nn.Sequential(*layers)
         # building last several layers
         self.conv = conv_1x1_bn(input_channel, exp_size)
@@ -163,7 +164,7 @@ class MobileNetV3(nn.Module):
         x = self.features(x)
         x = self.conv(x)
         x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
+        x = x.view(-1, self.exp_size)
         x = self.classifier(x)
         return x
 
