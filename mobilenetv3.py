@@ -53,6 +53,7 @@ class h_swish(nn.Module):
 class SELayer(nn.Module):
     def __init__(self, channel, reduction=4):
         super(SELayer, self).__init__()
+        self.channel = channel
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
                 nn.Linear(channel, _make_divisible(channel // reduction, 8)),
@@ -62,9 +63,8 @@ class SELayer(nn.Module):
         )
 
     def forward(self, x):
-        b, c, _, _ = x.size()
-        y = self.avg_pool(x).view(b, c)
-        y = self.fc(y).view(b, c, 1, 1)
+        y = self.avg_pool(x).view(-1, self.channel)
+        y = self.fc(y).view(-1, self.channel, 1, 1)
         return x * y
 
 
