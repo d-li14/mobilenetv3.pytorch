@@ -45,3 +45,13 @@ month = {October},
 year = {2019}
 }
 ```
+If you find this implementation helpful in your research, please also consider citing:
+```
+@InProceedings{Li_2019_ICCV,
+author = {Li, Duo and Zhou, Aojun and Yao, Anbang},
+title = {HBONet: Harmonious Bottleneck on Two Orthogonal Dimensions},
+booktitle = {The IEEE International Conference on Computer Vision (ICCV)},
+month = {October},
+year = {2019}
+}
+```
