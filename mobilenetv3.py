@@ -115,7 +115,6 @@ class InvertedResidual(nn.Module):
                 h_swish() if use_hs else nn.ReLU(inplace=True),
                 # Squeeze-and-Excite
                 SELayer(hidden_dim) if use_se else nn.Identity(),
-                h_swish() if use_hs else nn.ReLU(inplace=True),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
                 nn.BatchNorm2d(oup),
